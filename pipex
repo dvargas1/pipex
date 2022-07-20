@@ -1,0 +1,97 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    pipex                                              :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2022/07/20 14:41:12 by dvargas           #+#    #+#              #
+#    Updated: 2022/07/20 16:12:09 by dvargas          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+----------------------------DESCRICAO-----------------------------------------
+O programa deve se comportar como
+
+$ < file1 cmd | cmd2 > file2
+
+Ele será chamado dessa forma:
+
+$ ./pipex infile "ls -l" "wc -l" outfile
+
+@@@@@@ BONUS @@@@@@@
+
+Fazer o comando lidar com multiplos processos 
+$ < file1 cmd1 | cmd2 | cmd3 | cmd4 | cmd5 > file2
+
+será chamado dessa forma
+
+$ ./ file1 cmd1 cmd2 cmd3 cmd4 cmd5 file2
+
+O arquivo tbm tem que suportar >> e << quando o primeirp parametro estiver em aspas duplas
+
+$. << LIMITER | cmd1 >> file
+
+será chamdo dessa forma
+
+$ ./pipex here_doc LIMITER cmd cmd1 file
+-------------------------------------------------------------------------------
+
+Conceitos Básicos
+
+Shell funciona com standard input e output 
+Standard input são os dados necessários para o programa funcionar
+Standard output são os dados queo programa processou 
+
+O shell permite que voce redirecione o std input e output utilizando ">" e "<" da seguinte maneira.
+
+$ cat < fileA (estou indicando que farei o uso do comando "CAT" no arquivo fileA
+
+$ cat < fileA > fileB (fazer o comando "CAT" no arquivo fileA e enviar o resultado desse comando para o arquivo fileB) OBS: se ele nao for utilizado o resultado sera enviado para STDOUT que é o tty (terminal)
+
+os comandos ">>" e "<<" fazem basicamente a mesma coisa que suas versões únicas, a diferençaa aqui é que ele não deleta o conteúo anterior do arquivo, mas sim atualiza com novos dados.
+
+Pipe "|" permite que conectemos o STDOUT de um comando com um STDIN de outro 
+fazendo conseguindo uma ligação entre eles para que o conteúdo de um possa ser utilizado
+pelo outro.
+Exemplo:.
+
+$fileA < fileA cat | wc -l (aqui ele vai ser a fileA, utlizar o comando cat, depois wc -l e retornar ao STDOUT, se for colocado um > no final ele retorna esse valor para o arquivo que for encaminhado.
+
+-------------------------------------------------------------------------------
+Funções permitidas
+
+open, close, read, write, malloc, free - Essas são velhas conhecidas
+
+perror - void perror(cons char *str)
+printa uma mensagem descritiva de erro para o "stderr", "str" é impresso seguido de uma virgual e espaço
+
+strerror - char *strerror (int errnum)
+procura uma array interna com o número do erro "errnum" e retorna um ponteiro para essa mensagem.
+
+access - int access(const char *pathname, int mode)
+checa se o processo evocador consegue acessar o "pathname"
+Exemplo, o utilizador nao tem permissões para acessar um arquivo, retorna -1 caso sucesso o retorno é 0
+
+dup - int dup(int oldfd)
+cria uma cópia de um file descriptor, ele utiliza sempre o menor número disponível de fd disponivel para ser o número de descritor.
+
+dup2- int dup2(int oldfd, int newfd)
+cria uma copia de um file descriptor mas aqui escolhemos o numero do descritor.
+
+execve- int execve(const char *pathname, char *const argv[], char *const envp[])
+encarregado de executar o programa referenciado no pathname.
+
+exit-void exit(int status)
+finaliza o processo imediatamente, qualquer file descriptor aberto pelo processo também é finalizado.
+
+fork- fork()
+fork é usado para criar um novo processo, este chamado de "child process" que roda ao mesmo tempo do "parent process" depois que um "child" é criado os dois processos executam as proximas instruções que seguem o chamado de fork() 
+
+pipe-
+
+unlink- 
+
+wait- 
+
+waitpid-
