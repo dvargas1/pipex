@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/01 23:23:58 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/02 08:40:35 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int main (int argc char **argv **envp)
 		dup2(pipe[1], 1); // 1 Envia informação será passada por meio deste pipe
 		close(pipe[0]);
 		close(fd[1]);
-		//Encontre o comando no sistema e execute, aqui agnt deve usar execv e path
+		//Encontre o comando no sistema e execute, aqui agnt deve usar execv
 	}
 	else
 		waitpid(pid1);
