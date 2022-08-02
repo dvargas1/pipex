@@ -1,15 +1,58 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    pipex                                              :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/07/20 14:41:12 by dvargas           #+#    #+#              #
-#    Updated: 2022/07/20 16:12:09 by dvargas          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
+/*   Updated: 2022/08/01 23:23:58 by dvargas          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+./pipex[0] infile[1] cmd1[2] cmd2[3] file2[4]
+
+//pipe[0] READ
+//pipe[1] WRITE
+
+int main (int argc char **argv **envp)
+{
+	int fd[2];
+	int pipe[2];
+
+	pipe(pipe);
+
+	// PRIMEIRO CONSTRUIMOS OS DOIS PROCESSOS E MIRAMOS O STDIN (0) E STDOUT(1) PARA ONDE PRECISAMOS.
+	int pid1 = fork();
+	if (pid1 == 0)
+	{
+		fd[0] = open(argv[1]); // fd[0] é o primeiro arquivo, observar parametros de OPEN e FIFO da função
+		dup2(fd[0], 0); // 0 A informação será lida daqui
+		dup2(pipe[1], 1); // 1 Envia informação será passada por meio deste pipe
+		close(pipe[0]);
+		close(fd[1]);
+		//Encontre o comando no sistema e execute, aqui agnt deve usar execv e path
+	}
+	else
+		waitpid(pid1);
+
+	int pid2 = fork();
+	if (pid2 == 0)
+	{
+		fd[1] = open(argv[4]) // fd[1] é o arquivo FIM, observar parametros OPEN e FIFO eles de vem ser alterados conforme necessidade de criação do arquivo/apend no arquivo
+		dup2(fd[1], 1); // A informação será escrita nesse arquivo fd[i], ele que será executado no comando Open, por isso a atenção nos parametros de OPEN.
+		dup2(pipe[0], 0); // Receptor da informação do pipe[1]
+		close(pipe[1]);
+		close(fd[0]);
+	//Encontre o comando no sistema e execute.
+	}
+	else
+		waitpid(pid2);
+	return (0);
+}
+
+
+/*
 ----------------------------DESCRICAO-----------------------------------------
 O programa deve se comportar como
 
@@ -58,6 +101,8 @@ Exemplo:.
 
 $fileA < fileA cat | wc -l (aqui ele vai ser a fileA, utlizar o comando cat, depois wc -l e retornar ao STDOUT, se for colocado um > no final ele retorna esse valor para o arquivo que for encaminhado.
 
+Processo é a forma de representar um programa em execução , é esse processo que utiliza os recuros disponibilizados pelo computador, memoria e processador por exemplo.
+
 -------------------------------------------------------------------------------
 Funções permitidas
 
@@ -86,12 +131,18 @@ exit-void exit(int status)
 finaliza o processo imediatamente, qualquer file descriptor aberto pelo processo também é finalizado.
 
 fork- fork()
-fork é usado para criar um novo processo, este chamado de "child process" que roda ao mesmo tempo do "parent process" depois que um "child" é criado os dois processos executam as proximas instruções que seguem o chamado de fork() 
+fork é usado para criar um novo processo, este chamado de "child process" que roda ao mesmo tempo do "parent process" depois que um "child" é criado os dois processos executam as proximas instruções que seguem o chamado de fork() Esse comando retorna 0 se tudo correr bem e -1 se tiver algum probleama, podendo ser atribuido a uma variável como int id = fork();  
 
 pipe-
+cria uma estrutura que permite alterar o STDIN e OUT de um processo, é por meio dele que faremos todo nosso codigo
 
 unlink- 
 
-wait- 
+wait- wait()
+Tem é usado para avisar ao compilador que aquele processo em especifico, um parent
+ou um child terá que esperar o outro finalizar a instrução para ele seguir e fazer a mesma. de certeza forma, essa funcao organiza os processos dentro do codigo.
 
 waitpid-
+Consegue enviar a informação de qual processo quero esperar, e se preciso esperar um status específico do processo para continuar a impressão
+
+*/
