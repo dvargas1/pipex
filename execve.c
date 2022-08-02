@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 08:42:23 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/02 17:05:34 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/02 19:35:26 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,30 +26,31 @@ void executable(char *cmd, char **argvec, char **envvec)
 int main (int argc, char **argv, char **envp)
 {
 	char **matrix;
+	char *cmd;
+
+	char *argvec[] = {argv[1], NULL};
+
 
 
 	int i = 0;
-	while(envp[i] != NULL)
+	while(envp[i] != NULL) //
 	{
 		if(ft_strncmp("PATH=", envp[i], 5) == 0)
-		{
-			printf("%s \n \n\n\n", envp[i]);
 			matrix = ft_split(envp[i], ':');
-		}
 		i++;
 	}
 	i= 0;
 	while(matrix[i] != NULL)
 	{
 		char *path = ft_strjoin(matrix[i], "/");
-		printf("%s \n", matrix[i]);
-		printf("%s \n", path);
 		path = ft_strjoin(path, argv[1]);
-		printf("%s \n", path);
+	//	printf("%s \n", path);
+		if(access(path, X_OK | F_OK) == 0 ) // X_OK (SE PODE SER EXECUTADO) 'E' F_OK(SE EXISTE)
+			cmd = path;
+		//return path;
 		i++;
 	}
-	
-	
-//	executable(cmd, argvec, envvec);
+//	printf("%s", cmd);
+	executable(cmd, argvec, NULL);
 }
 
