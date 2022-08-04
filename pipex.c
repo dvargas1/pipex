@@ -6,15 +6,101 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/02 08:40:35 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/04 00:31:38 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-./pipex[0] infile[1] cmd1[2] cmd2[3] file2[4]
+//./pipex[0] infile[1] cmd1[2] cmd2[3] file2[4]
 
 //pipe[0] READ
 //pipe[1] WRITE
+//
 
+#include <stddef.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/wait.h>
+#include "pipex.h"
+
+
+char *processwhere(char *cmd, char **envp)
+{
+	char **matrix;
+	char *line;
+	int i;
+
+	i = 0;
+	while(envp[i] != NULL)
+	{
+		if (ft_strncmp("PATH=", envp[i], 5) == 0)
+			matrix = ft_split(envp[i], ':');
+		i++;
+	}
+	i = 0;
+	while(matrix[i] != NULL)
+	{ 
+		line = ft_strjoin(matrix[i], "/");
+		line = ft_strjoin(line, cmd);
+		if(access(line, X_OK | F_OK) == 0 )
+			return(line);
+		i++;
+	}
+
+
+}
+
+void pipex(char **argv, char **envp)
+{
+	int fd[2];
+	int pipes[2];
+	int pid;
+	char **cmd;
+	char *where;
+
+		pipe(pipes);
+	pid = fork();
+	if (pid == 0)
+	{
+		fd[0] = open(argv[1], O_RDONLY);
+		dup2(fd[0], 0);
+		dup2(pipes[1], 1);
+		close(pipes[1]);
+		close(fd[0]);
+		close(pipes[0]);
+		cmd = ft_split(argv[2], ' ');
+		where = processwhere(argv[2], envp);
+		execve(where,cmd,NULL);
+	}
+
+	pid = fork();
+	if (pid == 0)
+	{
+		fd[1] = open(argv[4], O_RDWR | O_CREAT | O_TRUNC, 0644);
+		dup2(fd[1], 1);
+		dup2(pipes[0], 0);
+		close(pipes[1]);
+		close(fd[1]);
+		close(pipes[0]);
+		cmd = ft_split(argv[3], ' ');
+		where = processwhere(argv[3], envp);
+		execve(where,cmd,NULL);
+	}
+	close(fd[0]);
+	close(fd[1]);
+	close(pipes[0]);
+	close(pipes[1]);
+	wait(0);
+	wait(0);
+}
+
+
+int main(int argc, char **argv, char **envp)
+{
+	pipex(argv, envp);
+}
+
+/*
 int main (int argc char **argv **envp)
 {
 	int fd[2];
@@ -51,7 +137,7 @@ int main (int argc char **argv **envp)
 	return (0);
 }
 
-
+*/
 /*
 ----------------------------DESCRICAO-----------------------------------------
 O programa deve se comportar como

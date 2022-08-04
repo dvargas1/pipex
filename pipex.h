@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stddef.h>
 #include "libft/libft.h"
 
 #endif
