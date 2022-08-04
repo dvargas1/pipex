@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/04 00:31:38 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/04 13:59:28 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,11 @@ char *processwhere(char *cmd, char **envp)
 			return(line);
 		i++;
 	}
-
+	return("errornessacaralha");
 
 }
 
+// verificar a situaçÃo do pipe [0] e pipe [1]
 void pipex(char **argv, char **envp)
 {
 	int fd[2];
@@ -69,7 +70,7 @@ void pipex(char **argv, char **envp)
 		close(fd[0]);
 		close(pipes[0]);
 		cmd = ft_split(argv[2], ' ');
-		where = processwhere(argv[2], envp);
+		where = processwhere(cmd[0], envp);
 		execve(where,cmd,NULL);
 	}
 
@@ -83,7 +84,8 @@ void pipex(char **argv, char **envp)
 		close(fd[1]);
 		close(pipes[0]);
 		cmd = ft_split(argv[3], ' ');
-		where = processwhere(argv[3], envp);
+		printf("%s", cmd[0]);
+		where = processwhere(cmd[0], envp);
 		execve(where,cmd,NULL);
 	}
 	close(fd[0]);
