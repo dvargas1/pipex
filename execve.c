@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 08:42:23 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/02 19:35:26 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/07 18:18:35 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ void executable(char *cmd, char **argvec, char **envvec)
 	 printf("Algo deu errado");
 }
 
-int main (int argc, char **argv, char **envp)
+/*
+int access(int argc, char **argv, char **envp)
 {
 	char **matrix;
 	char *cmd;
@@ -53,4 +54,4 @@ int main (int argc, char **argv, char **envp)
 //	printf("%s", cmd);
 	executable(cmd, argvec, NULL);
 }
-
+*/

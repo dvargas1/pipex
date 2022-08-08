@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/04 13:59:28 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/07 19:49:19 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,6 @@
 //pipe[1] WRITE
 //
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/wait.h>
 #include "pipex.h"
 
 
@@ -100,6 +95,7 @@ void pipex(char **argv, char **envp)
 int main(int argc, char **argv, char **envp)
 {
 	pipex(argv, envp);
+	return(argc);
 }
 
 /*
