@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/07 19:49:19 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/18 00:20:38 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 
 #include "pipex.h"
 
-
 char *processwhere(char *cmd, char **envp)
 {
 	char **matrix;
@@ -29,7 +28,12 @@ char *processwhere(char *cmd, char **envp)
 	while(envp[i] != NULL)
 	{
 		if (ft_strncmp("PATH=", envp[i], 5) == 0)
+		{
 			matrix = ft_split(envp[i], ':');
+			if(!matrix)
+				perror("NO COMMAND FOUND");
+		}
+
 		i++;
 	}
 	i = 0;
@@ -41,61 +45,107 @@ char *processwhere(char *cmd, char **envp)
 			return(line);
 		i++;
 	}
-	return("errornessacaralha");
-
+	return("deu ruim");
 }
 
-// verificar a situaçÃo do pipe [0] e pipe [1]
-void pipex(char **argv, char **envp)
+void ft_process(char *argv, char **envp)
 {
-	int fd[2];
-	int pipes[2];
+	char **cmd;
+	char *where;
 	int pid;
+	int pipes[2];
+
+	if (pipe(pipes) == -1)
+		perror("ERROR IN PIPES");
+	pid = fork();
+	if (pid == -1)
+		perror("ERROR IN PID");
+	if (pid == 0)
+	{
+		close(pipes[1]);
+		dup2(pipes[0], 0);
+	}
+	close(pipes[0]);
+	dup2(pipes[1], 1);
+	cmd = ft_split(argv, ' ');
+	where = processwhere(cmd[0], envp);
+	execve(where,cmd,envp);
+}
+/*
+void ft_process_in(char *argv, char **envp, int *pipes)
+{
 	char **cmd;
 	char *where;
 
-		pipe(pipes);
-	pid = fork();
-	if (pid == 0)
-	{
-		fd[0] = open(argv[1], O_RDONLY);
-		dup2(fd[0], 0);
-		dup2(pipes[1], 1);
-		close(pipes[1]);
-		close(fd[0]);
-		close(pipes[0]);
-		cmd = ft_split(argv[2], ' ');
-		where = processwhere(cmd[0], envp);
-		execve(where,cmd,NULL);
-	}
-
-	pid = fork();
-	if (pid == 0)
-	{
-		fd[1] = open(argv[4], O_RDWR | O_CREAT | O_TRUNC, 0644);
-		dup2(fd[1], 1);
-		dup2(pipes[0], 0);
-		close(pipes[1]);
-		close(fd[1]);
-		close(pipes[0]);
-		cmd = ft_split(argv[3], ' ');
-		printf("%s", cmd[0]);
-		where = processwhere(cmd[0], envp);
-		execve(where,cmd,NULL);
-	}
-	close(fd[0]);
-	close(fd[1]);
+	dup2(pipes[1], 1);
 	close(pipes[0]);
 	close(pipes[1]);
-	wait(0);
-	wait(0);
+	cmd = ft_split(argv, ' ');
+	where = processwhere(cmd[0], envp);
+	execve(where,cmd,NULL);
+}
+
+void ft_process_out(char *argv, char **envp, int *pipes)
+{
+	char **cmd;
+	char *where;
+
+	dup2(pipes[0], 0);
+	close(pipes[0]);
+	close(pipes[1]);
+	cmd = ft_split(argv, ' ');
+	where = processwhere(cmd[0], envp);
+	execve(where,cmd,NULL);
+}
+*/
+
+void pipex(int argc, char **argv, char **envp)
+{
+	int file_in;
+	int file_out;
+	//int pipes[2];
+	//int pid;
+
+	//if (pipe(pipes) == -1)
+	//	perror("ERROR WITH PIPES");
+	if ((file_in = open(argv[1], O_RDONLY)) == -1)
+		perror("ERROR WITH FILE1");
+	if ((file_out = open(argv[argc-1], O_RDWR | O_CREAT | O_TRUNC, 0644)) == -1)
+		perror("ERROR WITH FILE2");
+	dup2(file_in, 0);
+	dup2(file_out, 1);
+	ft_process(argv[2], envp);
+	ft_process(argv[3], envp);
+
+	/*
+	pid = fork();
+	if (pid == -1)
+		perror("ERROR IN PID");
+	if (pid == 0)
+		ft_process_in(argv[2], envp, pipes);
+	pid = fork();
+	if (pid == -1)
+		perror("ERROR IN PID");
+	if (pid == 0)
+		ft_process_out(argv[3], envp, pipes);
+	close(pipes[1]);
+	close(pipes[0]);
+	*/
+	close(file_in);
+	close(file_out);
 }
 
 
 int main(int argc, char **argv, char **envp)
 {
-	pipex(argv, envp);
-	return(argc);
+	if(argc >= 5) 
+		pipex(argc, argv, envp);
+	else
+	{
+		perror("we need at least 5 arguments");
+		exit(EXIT_FAILURE);
+	}
+	return(0);
 }
 
 /*
