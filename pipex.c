@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/18 00:20:38 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/18 18:12:17 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ char *processwhere(char *cmd, char **envp)
 	}
 	return("deu ruim");
 }
-
+/*
 void ft_process(char *argv, char **envp)
 {
 	char **cmd;
@@ -65,13 +65,17 @@ void ft_process(char *argv, char **envp)
 		close(pipes[1]);
 		dup2(pipes[0], 0);
 	}
-	close(pipes[0]);
-	dup2(pipes[1], 1);
-	cmd = ft_split(argv, ' ');
-	where = processwhere(cmd[0], envp);
-	execve(where,cmd,envp);
+	else
+	{
+		close(pipes[0]);
+		dup2(pipes[1], 1);
+		cmd = ft_split(argv, ' ');
+		where = processwhere(cmd[0], envp);
+		execve(where,cmd,envp);
+	}
 }
-/*
+*/
+
 void ft_process_in(char *argv, char **envp, int *pipes)
 {
 	char **cmd;
@@ -95,29 +99,29 @@ void ft_process_out(char *argv, char **envp, int *pipes)
 	close(pipes[1]);
 	cmd = ft_split(argv, ' ');
 	where = processwhere(cmd[0], envp);
-	execve(where,cmd,NULL);
+	if (execve(where,cmd,NULL) == -1)
+		perror("gerenciar erro EXECV");
 }
-*/
+
 
 void pipex(int argc, char **argv, char **envp)
 {
 	int file_in;
 	int file_out;
-	//int pipes[2];
-	//int pid;
+	int pipes[2];
+	int pid;
 
-	//if (pipe(pipes) == -1)
-	//	perror("ERROR WITH PIPES");
+	if (pipe(pipes) == -1)
+		perror("ERROR WITH PIPES");
 	if ((file_in = open(argv[1], O_RDONLY)) == -1)
 		perror("ERROR WITH FILE1");
 	if ((file_out = open(argv[argc-1], O_RDWR | O_CREAT | O_TRUNC, 0644)) == -1)
 		perror("ERROR WITH FILE2");
 	dup2(file_in, 0);
 	dup2(file_out, 1);
-	ft_process(argv[2], envp);
-	ft_process(argv[3], envp);
-
-	/*
+//	ft_process(argv[2], envp);
+//	ft_process(argv[3], envp);
+//
 	pid = fork();
 	if (pid == -1)
 		perror("ERROR IN PID");
@@ -130,7 +134,6 @@ void pipex(int argc, char **argv, char **envp)
 		ft_process_out(argv[3], envp, pipes);
 	close(pipes[1]);
 	close(pipes[0]);
-	*/
 	close(file_in);
 	close(file_out);
 }
