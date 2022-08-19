@@ -10,7 +10,7 @@
 #include "libft/libft.h"
 
 void executable(char *cmd, char**argvec, char **envvec);
-char *processwhere(char *cmd, char **envp);
+//char *processwhere(char *cmd, char **envp);
 void pipex(int argc, char **argv, char **envp);
 
 

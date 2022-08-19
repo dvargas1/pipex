@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/18 18:12:17 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/19 10:49:09 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,44 @@
 
 #include "pipex.h"
 
+char *yellowbrickroad(char *cmd, char **matrix)
+{
+	char *path;
+	int i;
+
+	i = 0;
+	while(matrix[i] != NULL)
+	{
+		path = ft_strjoin(matrix[i], "/");
+		path = ft_strjoin(path, cmd);
+		if (access(path, X_OK | F_OK) == 0)
+			return(path);
+		i++;
+	}
+	return(NULL);
+}
+
+void reaper(char *cmd, char **envp)
+{
+	char **matrix;
+	char **args;
+	char *path;
+	int i;
+
+	i = 0;
+	args = ft_split(cmd, ' ');
+	while(envp[i] != NULL)
+	{
+		if (ft_strncmp("PATH=", envp[i], 5) == 0)
+			matrix = ft_split(envp[i], ':');
+		i++;
+	}
+	path = yellowbrickroad(args[0],matrix);
+	execve(path,args,envp);
+	perror("command not found");
+	exit(127);
+}
+/*
 char *processwhere(char *cmd, char **envp)
 {
 	char **matrix;
@@ -47,11 +85,10 @@ char *processwhere(char *cmd, char **envp)
 	}
 	return("deu ruim");
 }
-/*
+*/
+
 void ft_process(char *argv, char **envp)
 {
-	char **cmd;
-	char *where;
 	int pid;
 	int pipes[2];
 
@@ -69,71 +106,32 @@ void ft_process(char *argv, char **envp)
 	{
 		close(pipes[0]);
 		dup2(pipes[1], 1);
-		cmd = ft_split(argv, ' ');
-		where = processwhere(cmd[0], envp);
-		execve(where,cmd,envp);
+		reaper(argv, envp);
 	}
 }
-*/
-
-void ft_process_in(char *argv, char **envp, int *pipes)
-{
-	char **cmd;
-	char *where;
-
-	dup2(pipes[1], 1);
-	close(pipes[0]);
-	close(pipes[1]);
-	cmd = ft_split(argv, ' ');
-	where = processwhere(cmd[0], envp);
-	execve(where,cmd,NULL);
-}
-
-void ft_process_out(char *argv, char **envp, int *pipes)
-{
-	char **cmd;
-	char *where;
-
-	dup2(pipes[0], 0);
-	close(pipes[0]);
-	close(pipes[1]);
-	cmd = ft_split(argv, ' ');
-	where = processwhere(cmd[0], envp);
-	if (execve(where,cmd,NULL) == -1)
-		perror("gerenciar erro EXECV");
-}
-
 
 void pipex(int argc, char **argv, char **envp)
 {
 	int file_in;
 	int file_out;
-	int pipes[2];
-	int pid;
+//	char **cmd;
+//	char *where;
+	int i;
 
-	if (pipe(pipes) == -1)
-		perror("ERROR WITH PIPES");
+	i = 3;
 	if ((file_in = open(argv[1], O_RDONLY)) == -1)
 		perror("ERROR WITH FILE1");
 	if ((file_out = open(argv[argc-1], O_RDWR | O_CREAT | O_TRUNC, 0644)) == -1)
 		perror("ERROR WITH FILE2");
 	dup2(file_in, 0);
 	dup2(file_out, 1);
-//	ft_process(argv[2], envp);
-//	ft_process(argv[3], envp);
-//
-	pid = fork();
-	if (pid == -1)
-		perror("ERROR IN PID");
-	if (pid == 0)
-		ft_process_in(argv[2], envp, pipes);
-	pid = fork();
-	if (pid == -1)
-		perror("ERROR IN PID");
-	if (pid == 0)
-		ft_process_out(argv[3], envp, pipes);
-	close(pipes[1]);
-	close(pipes[0]);
+	ft_process(argv[2], envp);
+	while(i < argc - 2)
+	{
+		ft_process(argv[i], envp);
+		i++;
+	}
+	reaper(argv[i], envp);
 	close(file_in);
 	close(file_out);
 }
