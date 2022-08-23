@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   bonus.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/01 22:48:40 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/23 15:37:12 by dvargas          ###   ########.fr       */
+/*   Created: 2022/08/23 14:49:25 by dvargas           #+#    #+#             */
+/*   Updated: 2022/08/23 14:56:52 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
 
 void ft_process(char *argv, char **envp)
 {
@@ -26,7 +27,6 @@ void ft_process(char *argv, char **envp)
 	{
 		close(pipes[1]);
 		dup2(pipes[0], 0);
-		waitpid(pid, NULL, 0);
 	}
 	if (pid > 0)
 	{
@@ -50,6 +50,11 @@ void pipex(int argc, char **argv, char **envp)
 	dup2(file_in, 0);
 	dup2(file_out, 1);
 	ft_process(argv[2], envp);
+	while(i < argc - 2)
+	{
+		ft_process(argv[i], envp);
+		i++;
+	}
 	reaper(argv[i], envp);
 	close(file_in);
 	close(file_out);
