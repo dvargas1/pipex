@@ -6,7 +6,7 @@
 /*   By: dvargas <dvargas@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 14:39:19 by dvargas           #+#    #+#             */
-/*   Updated: 2022/08/23 15:53:06 by dvargas          ###   ########.fr       */
+/*   Updated: 2022/08/24 10:01:27 by dvargas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ char *yellowbrickroad(char *cmd, char **matrix)
 		path = ft_strjoin(path, cmd);
 		if (access(path, X_OK | F_OK) == 0)
 			return(path);
+		else
+			free(path);
 		i++;
 	}
 	return(NULL);
