@@ -1,4 +1,4 @@
-# Pipex
+# Pipex :cloud_with_lightning_and_rain:	
 
 This project we need to create a program that handles pipes, it must run with 4 arguments for the mandatory part and it must have the same behavior as:
 
